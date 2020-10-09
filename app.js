@@ -1,11 +1,12 @@
 const express = require('express');
-const usersRouter = require('./routes/users');
+const path = require('path');
+const router = require('./routes/index.js');
 const { PORT = 3000 } = process.env;
 const app = express();
 
-app.use(express.static(__dirname + '/public'));
-// app.use('/', usersRouter);
+app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(router);
 
 app.listen(PORT, () => {
   console.log(`App listening on port localhost:${PORT}`)
