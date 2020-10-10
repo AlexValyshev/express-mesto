@@ -15,4 +15,4 @@
 1. Продолжить разворачивание полноценного сервера.
 
 ## **Ссылка на проект в Интернете**
-   https://alexvalyshev.github.io/express-mesto/index.html
+  https://alexvalyshev.github.io/express-mesto/index.html

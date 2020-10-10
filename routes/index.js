@@ -5,8 +5,7 @@ const cardsRouter = require('./cards.js');
 router.use('/', usersRouter);
 router.use('/', cardsRouter);
 router.use('/*', (req, res) => {
-  res.send({ "message": "Запрашиваемый ресурс не найден" })
+  res.send({ "message": "Запрашиваемый ресурс не найден" });
 });
-
 
 module.exports = router;
