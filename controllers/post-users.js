@@ -3,9 +3,10 @@
 const User = require('../models/user.js');
 
 // const jsonUsers = path.join(__dirname, '..', 'data', 'users.json');
+console.log(User);
 const postUsers = (req, res) => {
   // readFile(jsonUsers);
-  const { name, about, avatar } = req.body;
+  const { name, about, avatar } = req;
   User.create({ name, about, avatar })
     .then(user => res.send({ data: user }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' })); // данные не записались, вернём ошибку
