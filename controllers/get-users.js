@@ -13,10 +13,10 @@ const getUsers = (req, res) => {
 };
 
 const getUser = (req, res) => {
-  const { id } = req.params;
+  const { userId } = req.params;
   readFile(jsonUsers)
     .then(data => {
-      const user = data.find(item => item._id === id);
+      const user = data.find(item => item._id === userId);
       return user;
     })
     .then(user => {
