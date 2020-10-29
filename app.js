@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 /* eslint-disable import/order */
 const path = require('path');
 const express = require('express');
@@ -16,6 +17,13 @@ const bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use((req, res, next) => {
+  req.user = {
+    _id: '5f9b12363357b21414d42a1a'
+  };
+
+  next();
+});
 app.use(router);
 app.listen(PORT, () => {
   console.log(`App listening on port localhost:${PORT}`);
