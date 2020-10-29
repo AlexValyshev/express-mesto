@@ -1,8 +1,5 @@
-// const path = require('path');
-// const readFile = require('../utils/read-file.js');
 const User = require('../models/user.js');
 
-// const jsonUsers = path.join(__dirname, '..', 'data', 'users.json');
 const getUsers = (req, res) => {
   User.find({})
     .then(data => {
@@ -14,10 +11,10 @@ const getUsers = (req, res) => {
 };
 
 const getUser = (req, res) => {
-  const { userId } = req.params.id;
+  const { userId } = req.params;
   User.findById(userId)
-    .then(data => {
-      const user = data.find(item => item._id === userId);
+    .then(user => {
+      res.send(user);
       return user;
     })
     .then(user => {

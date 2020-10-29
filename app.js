@@ -1,5 +1,3 @@
-/* eslint-disable comma-dangle */
-/* eslint-disable import/order */
 const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');

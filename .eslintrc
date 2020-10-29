@@ -10,6 +10,9 @@
       }
     ],
     "no-console": "off",
+    "linebreak-style": ["off", "windows"],
+    "import/order": "off",
+    "comma-dangle": "off",
     "quotes": [
       "off",
       "double",
