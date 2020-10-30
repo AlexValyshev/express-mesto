@@ -13,6 +13,7 @@
     "linebreak-style": ["off", "windows"],
     "import/order": "off",
     "comma-dangle": "off",
+    "no-unused-vars": "off",
     "quotes": [
       "off",
       "double",
