@@ -35,8 +35,38 @@ const postUsers = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' })); // данные не записались, вернём ошибку
 };
 
+const updateProfile = (req, res) => {
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name: 'Александр' },
+    {
+      new: true,
+      runValidators: true,
+      upsert: true
+    }
+  )
+    .then(user => res.send({ data: user }))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' })); // данные не записались, вернём ошибку
+};
+
+const updateAvatar = (req, res) => {
+  User.findByIdAndUpdate(
+    req.user._id,
+    { avatar: 'https://images.unsplash.com/photo-1542903660-eedba2cda473?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80' },
+    {
+      new: true,
+      runValidators: true,
+      upsert: true
+    }
+  )
+    .then(user => res.send({ data: user }))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' })); // данные не записались, вернём ошибку
+};
+
 module.exports = {
   getUsers,
   getUser,
   postUsers,
+  updateProfile,
+  updateAvatar,
 };
