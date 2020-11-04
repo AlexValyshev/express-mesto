@@ -12,7 +12,7 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     validate: {
-      validator(v) { // validator - функция проверки данных. v - значение свойства avatar
+      validator(v) { // validator - функция проверки данных. v - значение свойства link
         return regex.test(v); // если проверка Url по требованиям прошла, то вернется true
       },
       message: 'Введите правильный Url', // когда validator вернёт false
