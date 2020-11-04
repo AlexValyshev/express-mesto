@@ -2,37 +2,49 @@ const User = require('../models/user.js');
 
 const getUsers = (req, res) => {
   User.find({})
-    .then(data => {
-      res.send(data);
+    .then(users => {
+      res.send(users);
     })
     .catch(() => {
-      res.status(500).send({ "mesage": "Файл с данными не найден" });
+      res.status(500).send({ "mesage": "Ошибка на стороне сервера" });
     });
 };
 
 const getUser = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
-    .then(user => {
-      res.send(user);
-      return user;
+    .orFail(() => {
+      const err = new Error('Пользователь не найден');
+      err.statusCode = 404;
+      throw err;
     })
     .then(user => {
-      if (!user) {
-        return res.status(404).send({ "message": "Нет пользователя с таким id" });
+      res.send(user);
+    })
+    .catch(err => {
+      if (err.kind === 'ObjectId') {
+        return res.status(400).send({ "mesage": "Не корректный _id пользователя" });
       }
-      res.send(user);
-    })
-    .catch(() => {
-      res.status(500).send({ "mesage": "Файл с данными не найден" });
+      if (err.statusCode === 404) {
+        return res.status(404).send({ "mesage": err.message });
+      }
+      res.status(500).send({ "mesage": "Ошибка на стороне сервера" });
     });
 };
 
 const postUsers = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then(user => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' })); // данные не записались, вернём ошибку
+    .then(user => res.send({ user }))
+    .catch(err => {
+      if (err.name === 'ValidationError') {
+        const listErrors = Object.keys(err.errors);
+        const messages = listErrors.map((item) => err.errors[item].message);
+        res.status(400).send({ "message": `Переданы некорректные данные: ${messages.join(' ')}` });
+      } else {
+        res.status(500).send({ "mesage": "Ошибка на стороне сервера" });
+      }
+    });
 };
 
 const updateProfile = (req, res) => {
@@ -41,12 +53,24 @@ const updateProfile = (req, res) => {
     { name: 'Александр' },
     {
       new: true,
-      runValidators: true,
-      upsert: true
+      runValidators: true
     }
   )
-    .then(user => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' })); // данные не записались, вернём ошибку
+    .orFail(() => {
+      const err = new Error('Пользователь не найден');
+      err.statusCode = 404;
+      throw err;
+    })
+    .then(user => res.send({ user }))
+    .catch(err => {
+      if (err.kind === 'ObjectId') {
+        return res.status(400).send({ "mesage": "Не корректный _id пользователя" });
+      }
+      if (err.statusCode === 404) {
+        return res.status(404).send({ "mesage": err.message });
+      }
+      res.status(500).send({ "mesage": "Ошибка на стороне сервера" });
+    });
 };
 
 const updateAvatar = (req, res) => {
@@ -59,8 +83,21 @@ const updateAvatar = (req, res) => {
       upsert: true
     }
   )
-    .then(user => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' })); // данные не записались, вернём ошибку
+    .orFail(() => {
+      const err = new Error('Пользователь не найден');
+      err.statusCode = 404;
+      throw err;
+    })
+    .then(user => res.send({ user }))
+    .catch(err => {
+      if (err.kind === 'ObjectId') {
+        return res.status(400).send({ "mesage": "Не корректный _id пользователя" });
+      }
+      if (err.statusCode === 404) {
+        return res.status(404).send({ "mesage": err.message });
+      }
+      res.status(500).send({ "mesage": "Ошибка на стороне сервера" });
+    });
 };
 
 module.exports = {
