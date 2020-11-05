@@ -1,4 +1,8 @@
 const User = require('../models/user.js');
+const {
+  errorServer, errorData, errorUser, errorIdUser
+} = require('../utils/constants');
+const { defineValidationError } = require('../utils/validation');
 
 const getUsers = (req, res) => {
   User.find({})
@@ -6,7 +10,7 @@ const getUsers = (req, res) => {
       res.send(users);
     })
     .catch(() => {
-      res.status(500).send({ "mesage": "Ошибка на стороне сервера" });
+      res.status(500).send({ "message": `${errorServer}` });
     });
 };
 
@@ -14,7 +18,7 @@ const getUser = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
     .orFail(() => {
-      const err = new Error('Пользователь не найден');
+      const err = new Error(errorUser);
       err.statusCode = 404;
       throw err;
     })
@@ -23,12 +27,12 @@ const getUser = (req, res) => {
     })
     .catch(err => {
       if (err.kind === 'ObjectId') {
-        return res.status(400).send({ "mesage": "Не корректный _id пользователя" });
+        return res.status(400).send({ "mesage": `${errorIdUser}` });
       }
       if (err.statusCode === 404) {
         return res.status(404).send({ "mesage": err.message });
       }
-      res.status(500).send({ "mesage": "Ошибка на стороне сервера" });
+      res.status(500).send({ "message": `${errorServer}` });
     });
 };
 
@@ -38,65 +42,66 @@ const postUsers = (req, res) => {
     .then(user => res.send({ user }))
     .catch(err => {
       if (err.name === 'ValidationError') {
-        const listErrors = Object.keys(err.errors);
-        const messages = listErrors.map((item) => err.errors[item].message);
-        res.status(400).send({ "message": `Переданы некорректные данные: ${messages.join(' ')}` });
+        defineValidationError(err, res, errorData);
       } else {
-        res.status(500).send({ "mesage": "Ошибка на стороне сервера" });
+        res.status(500).send({ "message": `${errorServer}` });
       }
     });
 };
 
 const updateProfile = (req, res) => {
+  const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
-    { name: 'Александр' },
+    { name, about },
     {
       new: true,
-      runValidators: true
+      runValidators: true,
+      upsert: false
     }
   )
     .orFail(() => {
-      const err = new Error('Пользователь не найден');
+      const err = new Error(errorUser);
       err.statusCode = 404;
       throw err;
     })
     .then(user => res.send({ user }))
     .catch(err => {
       if (err.kind === 'ObjectId') {
-        return res.status(400).send({ "mesage": "Не корректный _id пользователя" });
+        return res.status(400).send({ "mesage": `${errorIdUser}` });
       }
       if (err.statusCode === 404) {
         return res.status(404).send({ "mesage": err.message });
       }
-      res.status(500).send({ "mesage": "Ошибка на стороне сервера" });
+      res.status(500).send({ "message": `${errorServer}` });
     });
 };
 
 const updateAvatar = (req, res) => {
+  const { avatar } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
-    { avatar: 'https://images.unsplash.com/photo-1542903660-eedba2cda473?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80' },
+    { avatar },
     {
       new: true,
       runValidators: true,
-      upsert: true
+      upsert: false
     }
   )
     .orFail(() => {
-      const err = new Error('Пользователь не найден');
+      const err = new Error(errorUser);
       err.statusCode = 404;
       throw err;
     })
     .then(user => res.send({ user }))
     .catch(err => {
       if (err.kind === 'ObjectId') {
-        return res.status(400).send({ "mesage": "Не корректный _id пользователя" });
+        return res.status(400).send({ "mesage": `${errorIdUser}` });
       }
       if (err.statusCode === 404) {
         return res.status(404).send({ "mesage": err.message });
       }
-      res.status(500).send({ "mesage": "Ошибка на стороне сервера" });
+      res.status(500).send({ "message": `${errorServer}` });
     });
 };
 

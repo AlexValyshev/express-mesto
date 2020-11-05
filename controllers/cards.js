@@ -1,14 +1,19 @@
-const { Error } = require('mongoose');
 const Card = require('../models/card.js');
+const {
+  errorServer, errorData, errorCard, errorIdCard
+} = require('../utils/constants');
+const { defineValidationError } = require('../utils/validation');
+// const Error404 = require('../utils/Error404.js');
+const { hanlerErrors } = require('../utils/handler-error');
 
 const getCards = (req, res) => {
   Card.find({})
-    .populate('owner')
+    .populate(['likes', 'owner'])
     .then(data => {
       res.send(data);
     })
     .catch(() => {
-      res.status(500).send({ "mesage": "Ошибка на стороне сервера" });
+      res.status(500).send({ "message": `${errorServer}` });
     });
 };
 
@@ -19,11 +24,9 @@ const postCards = (req, res) => {
     .then(card => res.send({ card }))
     .catch(err => {
       if (err.name === 'ValidationError') {
-        const listErrors = Object.keys(err.errors);
-        const messages = listErrors.map((item) => err.errors[item].message);
-        res.status(400).send({ "message": `Переданы некорректные данные: ${messages.join(' ')}` });
+        defineValidationError(err, res, errorData);
       } else {
-        res.status(500).send({ "mesage": "Ошибка на стороне сервера" });
+        res.status(500).send({ "message": `${errorServer}` });
       }
     });
 };
@@ -32,19 +35,13 @@ const deleteCards = (req, res) => {
   const { cardId } = req.params;
   Card.findByIdAndRemove(cardId)
     .orFail(() => {
-      const err = new Error('Карточка не найдена');
+      const err = new Error(errorCard);
       err.statusCode = 404;
       throw err;
     })
     .then(card => res.send({ card }))
     .catch(err => {
-      if (err.kind === 'ObjectId') {
-        return res.status(400).send({ "mesage": "Не корректный _id карточки" });
-      }
-      if (err.statusCode === 404) {
-        return res.status(404).send({ "mesage": err.message });
-      }
-      res.status(500).send({ "mesage": "Ошибка на стороне сервера" });
+      hanlerErrors(err, res, errorIdCard, errorServer);
     });
 };
 
@@ -56,17 +53,20 @@ const likeCard = (req, res) => {
     { new: true },
   )
     .orFail(() => {
-      const err = new Error('Карточка не найдена');
+      const err = new Error(errorCard);
       err.statusCode = 404;
       throw err;
     })
     .populate('likes')
     .then(card => res.send({ card }))
     .catch(err => {
+      if (err.kind === 'ObjectId') {
+        return res.status(400).send({ "mesage": `${errorIdCard}` });
+      }
       if (err.statusCode === 404) {
         return res.status(404).send({ "mesage": err.message });
       }
-      res.status(500).send({ "mesage": "Ошибка на стороне сервера" });
+      res.status(500).send({ "message": `${errorServer}` });
     });
 };
 
@@ -78,17 +78,20 @@ const disLikeCard = (req, res) => {
     { new: true },
   )
     .orFail(() => {
-      const err = new Error('Карточка не найдена');
+      const err = new Error(errorCard);
       err.statusCode = 404;
       throw err;
     })
     .populate('likes')
     .then(card => res.send({ card }))
     .catch(err => {
+      if (err.kind === 'ObjectId') {
+        return res.status(400).send({ "mesage": `${errorIdCard}` });
+      }
       if (err.statusCode === 404) {
         return res.status(404).send({ "mesage": err.message });
       }
-      res.status(500).send({ "mesage": "Ошибка на стороне сервера" });
+      res.status(500).send({ "message": `${errorServer}` });
     });
 };
 
