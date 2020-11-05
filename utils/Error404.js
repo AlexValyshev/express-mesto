@@ -1,10 +1,9 @@
-class Error404 extends Error {
-  constructor(message) {
-    super(message);
-    this.statusCode = 404;
-  }
-}
+const error404 = (errorName) => {
+  const err = new Error(errorName);
+  err.statusCode = 404;
+  return err;
+};
 
 module.exports = {
-  Error404
+  error404
 };

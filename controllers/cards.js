@@ -1,9 +1,7 @@
 const Card = require('../models/card.js');
-const {
-  errorServer, errorData, errorCard, errorIdCard
-} = require('../utils/constants');
+const { errorCard, errorIdCard } = require('../utils/constants');
 const { defineValidationError } = require('../utils/validation');
-// const Error404 = require('../utils/Error404.js');
+const { error404 } = require('../utils/error404');
 const { hanlerErrors } = require('../utils/handler-error');
 
 const getCards = (req, res) => {
@@ -12,8 +10,8 @@ const getCards = (req, res) => {
     .then(data => {
       res.send(data);
     })
-    .catch(() => {
-      res.status(500).send({ "message": `${errorServer}` });
+    .catch((err) => {
+      hanlerErrors(err, res, errorIdCard);
     });
 };
 
@@ -24,9 +22,9 @@ const postCards = (req, res) => {
     .then(card => res.send({ card }))
     .catch(err => {
       if (err.name === 'ValidationError') {
-        defineValidationError(err, res, errorData);
+        defineValidationError(err, res);
       } else {
-        res.status(500).send({ "message": `${errorServer}` });
+        hanlerErrors(err, res, errorIdCard);
       }
     });
 };
@@ -35,13 +33,11 @@ const deleteCards = (req, res) => {
   const { cardId } = req.params;
   Card.findByIdAndRemove(cardId)
     .orFail(() => {
-      const err = new Error(errorCard);
-      err.statusCode = 404;
-      throw err;
+      throw error404(errorCard);
     })
     .then(card => res.send({ card }))
     .catch(err => {
-      hanlerErrors(err, res, errorIdCard, errorServer);
+      hanlerErrors(err, res, errorIdCard);
     });
 };
 
@@ -53,20 +49,12 @@ const likeCard = (req, res) => {
     { new: true },
   )
     .orFail(() => {
-      const err = new Error(errorCard);
-      err.statusCode = 404;
-      throw err;
+      throw error404(errorCard);
     })
     .populate('likes')
     .then(card => res.send({ card }))
     .catch(err => {
-      if (err.kind === 'ObjectId') {
-        return res.status(400).send({ "mesage": `${errorIdCard}` });
-      }
-      if (err.statusCode === 404) {
-        return res.status(404).send({ "mesage": err.message });
-      }
-      res.status(500).send({ "message": `${errorServer}` });
+      hanlerErrors(err, res, errorIdCard);
     });
 };
 
@@ -74,24 +62,16 @@ const disLikeCard = (req, res) => {
   const { cardId } = req.params;
   Card.findByIdAndUpdate(
     cardId,
-    { $pull: { likes: req.user._id } }, // убрать _id из массива
+    { $pull: { likes: req.user._id } },
     { new: true },
   )
     .orFail(() => {
-      const err = new Error(errorCard);
-      err.statusCode = 404;
-      throw err;
+      throw error404(errorCard);
     })
     .populate('likes')
     .then(card => res.send({ card }))
     .catch(err => {
-      if (err.kind === 'ObjectId') {
-        return res.status(400).send({ "mesage": `${errorIdCard}` });
-      }
-      if (err.statusCode === 404) {
-        return res.status(404).send({ "mesage": err.message });
-      }
-      res.status(500).send({ "message": `${errorServer}` });
+      hanlerErrors(err, res, errorIdCard);
     });
 };
 

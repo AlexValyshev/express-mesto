@@ -1,16 +1,16 @@
 const User = require('../models/user.js');
-const {
-  errorServer, errorData, errorUser, errorIdUser
-} = require('../utils/constants');
+const { errorUser, errorIdUser } = require('../utils/constants');
 const { defineValidationError } = require('../utils/validation');
+const { error404 } = require('../utils/error404');
+const { hanlerErrors } = require('../utils/handler-error');
 
 const getUsers = (req, res) => {
   User.find({})
     .then(users => {
       res.send(users);
     })
-    .catch(() => {
-      res.status(500).send({ "message": `${errorServer}` });
+    .catch((err) => {
+      hanlerErrors(err, res, errorIdUser);
     });
 };
 
@@ -18,21 +18,13 @@ const getUser = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
     .orFail(() => {
-      const err = new Error(errorUser);
-      err.statusCode = 404;
-      throw err;
+      throw error404(errorUser);
     })
     .then(user => {
       res.send(user);
     })
     .catch(err => {
-      if (err.kind === 'ObjectId') {
-        return res.status(400).send({ "mesage": `${errorIdUser}` });
-      }
-      if (err.statusCode === 404) {
-        return res.status(404).send({ "mesage": err.message });
-      }
-      res.status(500).send({ "message": `${errorServer}` });
+      hanlerErrors(err, res, errorIdUser);
     });
 };
 
@@ -42,9 +34,9 @@ const postUsers = (req, res) => {
     .then(user => res.send({ user }))
     .catch(err => {
       if (err.name === 'ValidationError') {
-        defineValidationError(err, res, errorData);
+        defineValidationError(err, res);
       } else {
-        res.status(500).send({ "message": `${errorServer}` });
+        hanlerErrors(err, res, errorIdUser);
       }
     });
 };
@@ -61,19 +53,15 @@ const updateProfile = (req, res) => {
     }
   )
     .orFail(() => {
-      const err = new Error(errorUser);
-      err.statusCode = 404;
-      throw err;
+      throw error404(errorUser);
     })
     .then(user => res.send({ user }))
     .catch(err => {
-      if (err.kind === 'ObjectId') {
-        return res.status(400).send({ "mesage": `${errorIdUser}` });
+      if (err.name === 'ValidationError') {
+        defineValidationError(err, res);
+      } else {
+        hanlerErrors(err, res, errorIdUser);
       }
-      if (err.statusCode === 404) {
-        return res.status(404).send({ "mesage": err.message });
-      }
-      res.status(500).send({ "message": `${errorServer}` });
     });
 };
 
@@ -89,19 +77,15 @@ const updateAvatar = (req, res) => {
     }
   )
     .orFail(() => {
-      const err = new Error(errorUser);
-      err.statusCode = 404;
-      throw err;
+      throw error404(errorUser);
     })
     .then(user => res.send({ user }))
     .catch(err => {
-      if (err.kind === 'ObjectId') {
-        return res.status(400).send({ "mesage": `${errorIdUser}` });
+      if (err.name === 'ValidationError') {
+        defineValidationError(err, res);
+      } else {
+        hanlerErrors(err, res, errorIdUser);
       }
-      if (err.statusCode === 404) {
-        return res.status(404).send({ "mesage": err.message });
-      }
-      res.status(500).send({ "message": `${errorServer}` });
     });
 };
 
