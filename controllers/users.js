@@ -1,7 +1,7 @@
 const User = require('../models/user.js');
 const { errorUser, errorIdUser } = require('../utils/constants');
 const { defineValidationError } = require('../utils/validation');
-const { error404 } = require('../utils/error404');
+const { errorCode } = require('../utils/error-code');
 const { hanlerErrors } = require('../utils/handler-error');
 
 const getUsers = (req, res) => {
@@ -18,7 +18,7 @@ const getUser = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
     .orFail(() => {
-      throw error404(errorUser);
+      throw errorCode(errorUser);
     })
     .then(user => {
       res.send(user);
@@ -53,7 +53,7 @@ const updateProfile = (req, res) => {
     }
   )
     .orFail(() => {
-      throw error404(errorUser);
+      throw errorCode(errorUser);
     })
     .then(user => res.send({ user }))
     .catch(err => {
@@ -77,7 +77,7 @@ const updateAvatar = (req, res) => {
     }
   )
     .orFail(() => {
-      throw error404(errorUser);
+      throw errorCode(errorUser);
     })
     .then(user => res.send({ user }))
     .catch(err => {

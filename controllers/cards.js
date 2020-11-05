@@ -1,7 +1,7 @@
 const Card = require('../models/card.js');
 const { errorCard, errorIdCard } = require('../utils/constants');
 const { defineValidationError } = require('../utils/validation');
-const { error404 } = require('../utils/error404');
+const { errorCode } = require('../utils/error-code');
 const { hanlerErrors } = require('../utils/handler-error');
 
 const getCards = (req, res) => {
@@ -33,7 +33,7 @@ const deleteCards = (req, res) => {
   const { cardId } = req.params;
   Card.findByIdAndRemove(cardId)
     .orFail(() => {
-      throw error404(errorCard);
+      throw errorCode(errorCard);
     })
     .then(card => res.send({ card }))
     .catch(err => {
@@ -49,7 +49,7 @@ const likeCard = (req, res) => {
     { new: true },
   )
     .orFail(() => {
-      throw error404(errorCard);
+      throw errorCode(errorCard);
     })
     .populate('likes')
     .then(card => res.send({ card }))
@@ -66,7 +66,7 @@ const disLikeCard = (req, res) => {
     { new: true },
   )
     .orFail(() => {
-      throw error404(errorCard);
+      throw errorCode(errorCard);
     })
     .populate('likes')
     .then(card => res.send({ card }))
