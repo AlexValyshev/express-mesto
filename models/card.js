@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const regex = /https?:\/\/[www]?[a-z0-9/.-=]+#?/;
+const regex = /https?:\/\/[w{3}.]?[a-z0-9/.-=]#?/;
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -12,10 +12,10 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     validate: {
-      validator(v) { // validator - функция проверки данных. v - значение свойства avatar
-        return regex.test(v); // если проверка Url по требованиям прошла, то вернется true
+      validator(v) {
+        return regex.test(v);
       },
-      message: 'Введите правильный Url', // когда validator вернёт false
+      message: 'Введена неправильная ссылка',
     },
     required: true,
   },
