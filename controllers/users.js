@@ -1,5 +1,4 @@
 const User = require('../models/user.js');
-
 const { errorUser, errorIdUser } = require('../utils/constants');
 const { defineValidationError } = require('../utils/validation');
 const { errorCode } = require('../utils/error-code');

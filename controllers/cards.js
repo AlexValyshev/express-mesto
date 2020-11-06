@@ -1,5 +1,4 @@
 const Card = require('../models/card.js');
-
 const { errorCard, errorIdCard } = require('../utils/constants');
 const { defineValidationError } = require('../utils/validation');
 const { errorCode } = require('../utils/error-code');
