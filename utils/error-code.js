@@ -5,5 +5,5 @@ const errorCode = (errorName) => {
 };
 
 module.exports = {
-  errorCode
+  errorCode,
 };

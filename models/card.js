@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const regex = /https?:\/\/[w{3}.]?[a-z0-9/.-=]#?/;
+const regex = /https?:\/\/[www.]?[a-z0-9.-]{1,}\.[a-z]{2,3}[a-z0-9/.-=]?#?/;
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -24,13 +24,11 @@ const cardSchema = new mongoose.Schema({
     ref: 'user',
     required: true,
   },
-  likes: {
+  likes: [{
     default: [],
-    type: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'user',
-    }],
-  },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
+  }],
   createdAt: {
     type: Date,
     default: Date.now,

@@ -1,15 +1,11 @@
 const { errorServer } = require('./constants');
 
-const hanlerErrors = (err, res, errorId) => {
+module.exports.hanlerErrors = (err, res, errorId) => {
   if (err.kind === 'ObjectId') {
-    return res.status(400).send({ "mesage": `${errorId}` });
+    res.status(400).send({ mesage: `${errorId}` });
+  } else if (err.statusCode === 404) {
+    res.status(404).send({ mesage: err.message });
+  } else {
+    res.status(500).send({ message: `${errorServer}` });
   }
-  if (err.statusCode === 404) {
-    return res.status(404).send({ "mesage": err.message });
-  }
-  res.status(500).send({ "message": `${errorServer}` });
-};
-
-module.exports = {
-  hanlerErrors
 };

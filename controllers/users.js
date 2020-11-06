@@ -1,4 +1,5 @@
 const User = require('../models/user.js');
+
 const { errorUser, errorIdUser } = require('../utils/constants');
 const { defineValidationError } = require('../utils/validation');
 const { errorCode } = require('../utils/error-code');
@@ -6,7 +7,7 @@ const { hanlerErrors } = require('../utils/handler-error');
 
 const getUsers = (req, res) => {
   User.find({})
-    .then(users => {
+    .then((users) => {
       res.send(users);
     })
     .catch((err) => {
@@ -20,10 +21,10 @@ const getUser = (req, res) => {
     .orFail(() => {
       throw errorCode(errorUser);
     })
-    .then(user => {
+    .then((user) => {
       res.send(user);
     })
-    .catch(err => {
+    .catch((err) => {
       hanlerErrors(err, res, errorIdUser);
     });
 };
@@ -31,8 +32,8 @@ const getUser = (req, res) => {
 const postUsers = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then(user => res.send({ user }))
-    .catch(err => {
+    .then((user) => res.send({ user }))
+    .catch((err) => {
       if (err.name === 'ValidationError') {
         defineValidationError(err, res);
       } else {
@@ -49,14 +50,14 @@ const updateProfile = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: false
-    }
+      upsert: false,
+    },
   )
     .orFail(() => {
       throw errorCode(errorUser);
     })
-    .then(user => res.send({ user }))
-    .catch(err => {
+    .then((user) => res.send({ user }))
+    .catch((err) => {
       if (err.name === 'ValidationError') {
         defineValidationError(err, res);
       } else {
@@ -73,14 +74,14 @@ const updateAvatar = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: false
-    }
+      upsert: false,
+    },
   )
     .orFail(() => {
       throw errorCode(errorUser);
     })
-    .then(user => res.send({ user }))
-    .catch(err => {
+    .then((user) => res.send({ user }))
+    .catch((err) => {
       if (err.name === 'ValidationError') {
         defineValidationError(err, res);
       } else {
