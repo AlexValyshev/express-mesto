@@ -5,5 +5,6 @@ module.exports = {
   errorCard: 'Карточка не найдена',
   errorIdCard: 'Не корректный _id карточки',
   errorUser: 'Пользователь не найден',
-  errorIdUser: 'Не корректный _id пользователя',
+  errorRegister: 'Не введены почта или пароль',
+  errorEmail: 'Пользователь с такой почтой уже создан',
 };
